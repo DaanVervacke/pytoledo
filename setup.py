@@ -23,7 +23,7 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.10",
     ],
-    packages=find_packages(exclude=("tests",)),
+    packages=find_packages(exclude=("tests")),
     include_package_data=True,
     install_requires=["argparse", "requests", "bs4", "fake_useragent"],
     entry_points={
