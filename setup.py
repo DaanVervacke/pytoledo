@@ -1,5 +1,5 @@
 import pathlib
-from setuptools import setup, find_packages
+import setuptools
 
 # The directory containing this file
 HERE = pathlib.Path(__file__).parent
@@ -8,7 +8,7 @@ HERE = pathlib.Path(__file__).parent
 README = (HERE / "README.md").read_text()
 
 # This call to setup() does all the work
-setup(
+setuptools.setup(
     name="pyToledo",
     version="0.0.1",
     description="pyToledo is a Python library to interact with the common virtual learning environment for the Association KU Leuven (Toledo).",
@@ -23,12 +23,8 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.10",
     ],
-    packages=find_packages(exclude=("tests")),
+    packages=setuptools.find_packages(where="toledo"),
     include_package_data=True,
-    install_requires=["argparse", "requests", "bs4", "fake_useragent"],
-    entry_points={
-        "pyToledo": [
-            "realpython=toledo.__main__:main",
-        ]
-    }
+    install_requires=["argparse", "requests", "bs4", "fake_useragent"]
+
 )
