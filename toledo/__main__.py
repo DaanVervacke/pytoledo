@@ -12,7 +12,7 @@ from out import ToledoOutput
 def main(args):
 
     confparser = configparser.ConfigParser()
-    confparser.read(os.path.join(os.getcwd(), 'toledo', 'config.txt'))
+    confparser.read('config.txt')
 
     session = create_session_object(
         user=confparser.get('USER', 'RNumber'),

@@ -10,7 +10,7 @@ class ToledoApi:
     def __init__(self, session: requests.Session) -> None:
 
         self._parser = configparser.ConfigParser()
-        self._parser.read(os.path.join(os.getcwd(), 'toledo', 'config.txt'))
+        self._parser.read('config.txt')
 
         self._UPCOMING_URL = self._parser.get('API', 'UpcomingEndpoint')
         self._ENROLLMENTS_URL = self._parser.get('API', 'EnrollmentsEndpoint')

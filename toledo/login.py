@@ -19,8 +19,8 @@ class ToledoLogin:
     def __init__(self, user: str, password: str) -> None:
 
         parser = configparser.ConfigParser()
-        parser.read(os.path.join(os.getcwd(), 'toledo', 'config.txt'))
-
+        parser.read('config.txt')
+        
         self._PORTALURL = parser.get('LOGIN', 'PortalURL')
         self._DASHBOARDURL = parser.get('LOGIN', 'DashboardURL')
         self._AUTHORIZATION_ENDPOINT = parser.get(

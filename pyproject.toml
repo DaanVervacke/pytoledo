@@ -3,7 +3,6 @@ requires = [
     "setuptools>=42",
     "wheel",
     "requests",
-    "argparse",
     "bs4",
     "fake_useragent"
 ]

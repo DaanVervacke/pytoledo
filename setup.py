@@ -9,8 +9,8 @@ README = (HERE / "README.md").read_text()
 
 # This call to setup() does all the work
 setuptools.setup(
-    name="pyToledo",
-    version="0.0.1",
+    name="pyToledo-test2",
+    version="0.0.6",
     description="pyToledo is a Python library to interact with the common virtual learning environment for the Association KU Leuven (Toledo).",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -23,8 +23,8 @@ setuptools.setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.10",
     ],
-    packages=setuptools.find_packages(where="toledo"),
+    packages=setuptools.find_packages(),
     include_package_data=True,
-    install_requires=["argparse", "requests", "bs4", "fake_useragent"]
+    install_requires=["requests", "bs4", "fake_useragent"]
 
 )
