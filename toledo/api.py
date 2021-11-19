@@ -2,13 +2,14 @@ import sys
 import json
 import os
 try:
-    
+
     import requests
     import yaml
 
 except ImportError:
 
     sys.exit('Unable to import some modules')
+
 
 class ToledoApi:
 
@@ -49,13 +50,16 @@ class ToledoApi:
             if type == 'message':
 
                 return [event for event in events if event['eventType'] == 'message']
-            else:
+            elif type == 'update':
 
                 return [event for event in events if event['eventType'] == 'update']
+            else:
+
+                raise Exception('Unsupported event type!')
 
         except Exception as ex:
 
-            sys.exit(ex)
+            sys.exit(f'EVENTS: {ex}')
 
     def get_enrollments(self) -> json:
 
@@ -71,7 +75,7 @@ class ToledoApi:
 
         except Exception as ex:
 
-            sys.exit(ex)
+            sys.exit(f'ENROLLMENTS: {ex}')
 
     def get_upcoming(self) -> json:
 
@@ -87,7 +91,7 @@ class ToledoApi:
 
         except Exception as ex:
 
-            sys.exit(ex)
+            sys.exit(f'UPCOMING: {ex}')
 
     def get_to_do(self, type: str) -> json:
 
@@ -99,6 +103,8 @@ class ToledoApi:
 
             r.raise_for_status()
 
+            todolist = json.loads(r.text)
+
             if type == 'task':
 
                 contenttype = self._TASK
@@ -109,21 +115,13 @@ class ToledoApi:
 
             else:
 
-                contenttype = self._VARIOUS
+                raise Exception('Unsupported todo type!')
 
-            output = []
-
-            for item in json.loads(r.text):
-
-                if item['contentInfo']['contentType'] == contenttype:
-
-                    output.append(item)
-
-            return output
+            return [item for item in todolist if item['contentInfo']['contentType'] == contenttype]
 
         except Exception as ex:
 
-            sys.exit(ex)
+            sys.exit(f'TODO: {ex}')
 
 
 def create_api_object(session: requests.Session):
@@ -131,3 +129,4 @@ def create_api_object(session: requests.Session):
     return ToledoApi(
         session=session
     )
+    
