@@ -3,19 +3,19 @@ import requests
 import json
 import configparser
 import os
-
+import yaml
 
 class ToledoApi:
 
     def __init__(self, session: requests.Session) -> None:
 
-        self._parser = configparser.ConfigParser()
-        self._parser.read('config.txt')
+        with open('toledo/config.yaml', 'r') as f:
+            self._parser = yaml.safe_load(f)
 
-        self._UPCOMING_URL = self._parser.get('API', 'UpcomingEndpoint')
-        self._ENROLLMENTS_URL = self._parser.get('API', 'EnrollmentsEndpoint')
-        self._EVENTS_URL = self._parser.get('API', 'EventsEndpoint')
-        self._TODO_URL = self._parser.get('API', 'TodoEndpoint')
+        self._UPCOMING_URL = self._parser['API']['UpcomingEndpoint']
+        self._ENROLLMENTS_URL = self._parser['API']['EnrollmentsEndpoint']
+        self._EVENTS_URL = self._parser['API']['EventsEndpoint'] 
+        self._TODO_URL = self._parser['API']['TodoEndpoint'] 
 
         self._SESSION = session
 

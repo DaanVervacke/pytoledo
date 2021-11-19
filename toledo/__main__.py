@@ -3,6 +3,7 @@
 import argparse
 import configparser
 import os
+import yaml
 
 from login import create_session_object
 from api import create_api_object
@@ -11,12 +12,12 @@ from out import ToledoOutput
 
 def main(args):
 
-    confparser = configparser.ConfigParser()
-    confparser.read('config.txt')
+    with open('toledo/config.yaml', 'r') as f:
+        confparser = yaml.safe_load(f)
 
     session = create_session_object(
-        user=confparser.get('USER', 'RNumber'),
-        password=confparser.get('USER', 'Password')
+        user=confparser['USER']['RNumber'],
+        password=confparser['USER']['Password']
     )
 
     api = create_api_object(

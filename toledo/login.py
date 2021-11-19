@@ -6,6 +6,7 @@ import string
 import pkce
 import configparser
 import os
+import yaml
 
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
@@ -18,15 +19,14 @@ class ToledoLogin:
 
     def __init__(self, user: str, password: str) -> None:
 
-        parser = configparser.ConfigParser()
-        parser.read('config.txt')
-        
-        self._PORTALURL = parser.get('LOGIN', 'PortalURL')
-        self._DASHBOARDURL = parser.get('LOGIN', 'DashboardURL')
-        self._AUTHORIZATION_ENDPOINT = parser.get(
-            'LOGIN', 'AuthorizationEndpoint')
-        self._TOKEN_ENDPOINT = parser.get('LOGIN', 'TokenEndpoint')
-        self._BROKER_ENDPOINT = parser.get('LOGIN', 'BrokerEndpoint')
+        with open('toledo/config.yaml', 'r') as f:
+            parser = yaml.safe_load(f)
+
+        self._PORTALURL = parser['LOGIN']['PortalURL']
+        self._DASHBOARDURL = parser['LOGIN']['DashboardURL']
+        self._AUTHORIZATION_ENDPOINT = parser['LOGIN']['AuthorizationEndpoint']
+        self._TOKEN_ENDPOINT = parser['LOGIN']['TokenEndpoint']
+        self._BROKER_ENDPOINT = parser['LOGIN']['BrokerEndpoint'] 
 
         self._code_verifier, self._code_challenge = pkce.generate_pkce_pair()
 
