@@ -1,9 +1,14 @@
 import sys
-import requests
 import json
 import os
-import yaml
+try:
+    
+    import requests
+    import yaml
 
+except ImportError:
+
+    sys.exit('Unable to import some modules')
 
 class ToledoApi:
 
