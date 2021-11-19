@@ -58,7 +58,7 @@ optional arguments:
 
   --password PASSWORD, -pw PASSWORD
                         your password
-                        
+
   --silent, -s          surpress output
 
 ```
@@ -69,38 +69,38 @@ optional arguments:
 # returns all your courses in JSON
 toledo.get_enrollments()
 or
-python toledo -en
+python -m toledo -en
 ```
 ### Todo (tasks & tests)
 ```python
 # returns open tasks in JSON
 toledo.get_to_do(type='task')
 or
-python toledo -td task
+python -m toledo -td task
 
 # returns open tests in JSON
 toledo.get_to_do(type='test')
 or
-python toledo -td test
+python -m toledo -td test
 ```
 ### Upcoming courses
 ```python
 # returns your upcoming courses (for a certain day) in JSON
 toledo.get_upcoming()
 or
-python toledo -up
+python -m toledo -up
 ```
 ### Events (messages & updates)
 ```python
 # returns your messages in JSON
 toledo.get_events(type='message')
 or
-python toledo -ev message
+python -m toledo -ev message
 
 # returns your updates in JSON
 toledo.get_events(type='update')
 or
-python toledo -ev update
+python -m toledo -ev update
 ```
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
