@@ -61,12 +61,12 @@ if __name__ == '__main__':
         '--events', '-ev', help='retrieve your recent events (messages or updates)', choices=['message', 'update'])
 
     parser.add_argument(
-        '--rnumber', '-rn', help='your personal rnumber', nargs=1)
+        '--rnumber', '-rn', help='your personal rnumber', nargs=1, required=True)
     parser.add_argument(
-        '--password', '-pw', help='your password', nargs=1)
+        '--password', '-pw', help='your password', nargs=1, required=True)
 
     parser.add_argument(
         '--silent', '-s', help='surpress output', action='store_true')
     parser.parse_args()
-
+    
     main(parser.parse_args())
