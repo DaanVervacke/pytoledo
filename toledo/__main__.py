@@ -1,30 +1,18 @@
 # __main__.py
 
 import argparse
-import configparser
-import os
-import yaml
 import sys
+import json
 
-from login import create_session_object
-from api import create_api_object
-from out import ToledoOutput
+from toledo.login import create_session_object
+from toledo.api import create_api_object
 
 
 def main(args):
 
-    try:
-
-        with open(os.path.join(os.path.dirname(__file__), 'config.yaml'), 'r') as f:
-            confparser = yaml.safe_load(f)
-
-    except FileNotFoundError:
-
-        sys.exit('Unable to find find config.yaml')
-
     session = create_session_object(
-        user=confparser['USER']['RNumber'],
-        password=confparser['USER']['Password']
+        user=args.rnumber,
+        password=args.password
     )
 
     api = create_api_object(
@@ -51,25 +39,34 @@ def main(args):
             type=args.events
         )
 
+    if not args.silent:
+
+        json.dump(output, sys.stdout)
+
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
         epilog='', usage=argparse.SUPPRESS)
 
-    group = parser.add_mutually_exclusive_group(required=True)
+    optionsgroup = parser.add_mutually_exclusive_group(required=True)
 
-    group.add_argument(
+    optionsgroup.add_argument(
         '--enrollments', '-en', help='retrieve all your enrollments', action='store_true')
-    group.add_argument(
-        '--todo', '-t', help='retrieve your to-do list (tasks, tests or all)', choices=['task', 'test'])
-    group.add_argument(
-        '--upcoming', '-u', help='retrieve your upcoming courses', action='store_true')
-    group.add_argument(
+    optionsgroup.add_argument(
+        '--todo', '-td', help='retrieve your to-do list (tasks or tests)', choices=['task', 'test'])
+    optionsgroup.add_argument(
+        '--upcoming', '-up', help='retrieve your upcoming courses', action='store_true')
+    optionsgroup.add_argument(
         '--events', '-ev', help='retrieve your recent events (messages or updates)', choices=['message', 'update'])
 
     parser.add_argument(
-        '--output', '-o', help='specify outputname (without extension!)', required=True, nargs=1)
+        '--rnumber', '-rn', help='your personal rnumber', nargs=1)
+    parser.add_argument(
+        '--password', '-pw', help='your password', nargs=1)
+
+    parser.add_argument(
+        '--silent', '-s', help='surpress output', action='store_true')
     parser.parse_args()
 
     main(parser.parse_args())

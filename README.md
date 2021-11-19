@@ -9,8 +9,9 @@ This library reproduces the Toledo login flow and returns a requests Session obj
 
 The Session object allows you to query the various endpoints.
 
-Data will always be returned in JSON.
+Data will always be returned as JSON via stdout.
 
+Tested on Windows 11 & Ubuntu 20.04
 ## Installation
 
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install pyToledo.
@@ -20,6 +21,7 @@ pip install toledo
 ```
 
 ## Usage
+### As a package
 
 ```python
 from toledo import login
@@ -36,35 +38,69 @@ toledo = api.create_api_object(
     session=session
 )
 ```
+### As a script
+```bash
+optional arguments:
+  -h, --help            show this help message and exit
+
+  --enrollments, -en    retrieve all your enrollments
+
+  --todo {task,test}, -td {task,test}
+                        retrieve your to-do list (tasks or tests)
+
+  --upcoming, -up       retrieve your upcoming courses
+
+  --events {message,update}, -ev {message,update}
+                        retrieve your recent events (messages or updates)
+
+  --rnumber RNUMBER, -rn RNUMBER
+                        your personal rnumber
+
+  --password PASSWORD, -pw PASSWORD
+                        your password
+                        
+  --silent, -s          surpress output
+
+```
 
 ## Examples
 ### Enrollments/courses
 ```python
 # returns all your courses in JSON
 toledo.get_enrollments()
+or
+python toledo -en
 ```
 ### Todo (tasks & tests)
 ```python
 # returns open tasks in JSON
-toledo.get_todo(type='task')
+toledo.get_to_do(type='task')
+or
+python toledo -td task
 
 # returns open tests in JSON
-toledo.get_todo(type='test')
-
-# returns tasks, tests and various other stuff in JSON
-toledo.get_todo(type='all')
+toledo.get_to_do(type='test')
+or
+python toledo -td test
 ```
 ### Upcoming courses
 ```python
 # returns your upcoming courses (for a certain day) in JSON
 toledo.get_upcoming()
+or
+python toledo -up
 ```
 ### Events (messages & updates)
 ```python
 # returns your messages in JSON
 toledo.get_events(type='message')
+or
+python toledo -ev message
+
 # returns your updates in JSON
 toledo.get_events(type='update')
+or
+python toledo -ev update
 ```
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

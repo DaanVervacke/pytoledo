@@ -1,7 +1,6 @@
 import sys
 import requests
 import json
-import configparser
 import os
 import yaml
 
@@ -27,7 +26,7 @@ class ToledoApi:
         self._TASK = parser['API_TO_DO']['Task']
         self._TEST = parser['API_TO_DO']['Test']
         self._VARIOUS = parser['API_TO_DO']['Various']
-        
+
         self._SESSION = session
 
     def get_events(self, type: str) -> json:
