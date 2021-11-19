@@ -4,6 +4,7 @@ import argparse
 import configparser
 import os
 import yaml
+import sys
 
 from login import create_session_object
 from api import create_api_object
@@ -12,8 +13,14 @@ from out import ToledoOutput
 
 def main(args):
 
-    with open('toledo/config.yaml', 'r') as f:
-        confparser = yaml.safe_load(f)
+    try:
+
+        with open(os.path.join(os.path.dirname(__file__), 'config.yaml'), 'r') as f:
+            confparser = yaml.safe_load(f)
+
+    except FileNotFoundError:
+
+        sys.exit('Unable to find find config.yaml')
 
     session = create_session_object(
         user=confparser['USER']['RNumber'],

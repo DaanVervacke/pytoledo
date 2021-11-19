@@ -4,12 +4,11 @@ import json
 import random
 import string
 import pkce
-import configparser
 import os
 import yaml
 
+
 from bs4 import BeautifulSoup
-from fake_useragent import UserAgent
 from urllib.parse import urlparse, parse_qs
 
 
@@ -19,14 +18,20 @@ class ToledoLogin:
 
     def __init__(self, user: str, password: str) -> None:
 
-        with open('toledo/config.yaml', 'r') as f:
-            parser = yaml.safe_load(f)
+        try:
+
+            with open(os.path.join(os.path.dirname(__file__), 'config.yaml'), 'r') as f:
+                parser = yaml.safe_load(f)
+
+        except FileNotFoundError:
+
+            sys.exit('Unable to find find config.yaml')
 
         self._PORTALURL = parser['LOGIN']['PortalURL']
         self._DASHBOARDURL = parser['LOGIN']['DashboardURL']
         self._AUTHORIZATION_ENDPOINT = parser['LOGIN']['AuthorizationEndpoint']
         self._TOKEN_ENDPOINT = parser['LOGIN']['TokenEndpoint']
-        self._BROKER_ENDPOINT = parser['LOGIN']['BrokerEndpoint'] 
+        self._BROKER_ENDPOINT = parser['LOGIN']['BrokerEndpoint']
 
         self._code_verifier, self._code_challenge = pkce.generate_pkce_pair()
 
@@ -35,7 +40,7 @@ class ToledoLogin:
 
         self._SESSION = requests.Session()
         self._SESSION.headers.update({
-            'User-Agent': UserAgent().random,
+            'User-Agent': parser['USER']['UserAgent'],
             'Cache-Control': 'no-cache',
             'Pragma': 'no-cache'
         })

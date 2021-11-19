@@ -5,18 +5,29 @@ import configparser
 import os
 import yaml
 
+
 class ToledoApi:
 
     def __init__(self, session: requests.Session) -> None:
 
-        with open('toledo/config.yaml', 'r') as f:
-            self._parser = yaml.safe_load(f)
+        try:
 
-        self._UPCOMING_URL = self._parser['API']['UpcomingEndpoint']
-        self._ENROLLMENTS_URL = self._parser['API']['EnrollmentsEndpoint']
-        self._EVENTS_URL = self._parser['API']['EventsEndpoint'] 
-        self._TODO_URL = self._parser['API']['TodoEndpoint'] 
+            with open(os.path.join(os.path.dirname(__file__), 'config.yaml'), 'r') as f:
+                parser = yaml.safe_load(f)
 
+        except FileNotFoundError:
+
+            sys.exit('Unable to find find config.yaml')
+
+        self._UPCOMING_URL = parser['API']['UpcomingEndpoint']
+        self._ENROLLMENTS_URL = parser['API']['EnrollmentsEndpoint']
+        self._EVENTS_URL = parser['API']['EventsEndpoint']
+        self._TODO_URL = parser['API']['TodoEndpoint']
+
+        self._TASK = parser['API_TO_DO']['Task']
+        self._TEST = parser['API_TO_DO']['Test']
+        self._VARIOUS = parser['API_TO_DO']['Various']
+        
         self._SESSION = session
 
     def get_events(self, type: str) -> json:
@@ -86,15 +97,15 @@ class ToledoApi:
 
             if type == 'task':
 
-                contenttype = self._parser.get('API_TO_DO', 'Task')
+                contenttype = self._TASK
 
             elif type == 'test':
 
-                contenttype = self._parser.get('API_TO_DO', 'Test')
+                contenttype = self._TEST
 
             else:
 
-                contenttype = self._parser.get('API_TO_DO', 'Various')
+                contenttype = self._VARIOUS
 
             output = []
 
