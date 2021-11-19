@@ -1,6 +1,9 @@
 # pyToledo
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/DaanVervacke/pyToledo)
+![GitHub Repo stars](https://img.shields.io/github/stars/DaanVervacke/pyToledo)
 
-pyToledo is a Python library to interact with the common virtual learning environment for the Association KU Leuven (Toledo).
+
+pyToledo is a Python library to interact with the common virtual learning environment for the Association KU Leuven a.k.a Toledo.
 
 ## Motivation
 My goal was to provide an easy way to interact with the various KU Leuven API endpoints.
@@ -9,9 +12,12 @@ This library reproduces the Toledo login flow and returns a requests Session obj
 
 The Session object allows you to query the various endpoints.
 
-Data will always be returned as JSON via stdout.
+Good to know:
 
-Tested on Windows 11 & Ubuntu 20.04
+- Data will always be returned as JSON via stdout. You can redirect the output to any file using '>'.
+
+- Tested on Windows 11 & Ubuntu 20.04
+- Teacher accounts (u) are not supported!
 ## Installation
 
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install pyToledo.
@@ -102,6 +108,7 @@ toledo.get_events(type='update')
 or
 python -m toledo -ev update
 ```
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
