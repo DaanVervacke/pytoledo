@@ -9,8 +9,8 @@ README = (HERE / "README.md").read_text()
 
 # This call to setup() does all the work
 setuptools.setup(
-    name="pyToledo",
-    version="1.0.1",
+    name="pyToledo-test2",
+    version="2.0.1",
     description="pyToledo is a Python library to interact with the common virtual learning environment for the Association KU Leuven a.k.a Toledo.",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -25,6 +25,7 @@ setuptools.setup(
     ],
     packages=setuptools.find_packages(),
     include_package_data=True,
-    install_requires=["requests", "beautifulsoup4", "pkce", "soupsieve", "pyyaml"]
+    install_requires=["requests", "beautifulsoup4",
+                      "pkce", "soupsieve", "pyyaml"]
 
 )

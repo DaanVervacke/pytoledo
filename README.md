@@ -1,4 +1,5 @@
 # pyToledo
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/DaanVervacke/pyToledo)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/DaanVervacke/pyToledo)
 ![GitHub Repo stars](https://img.shields.io/github/stars/DaanVervacke/pyToledo)
 
@@ -8,9 +9,19 @@ pyToledo is a Python library to interact with the common virtual learning enviro
 ## Motivation
 My goal was to provide an easy way to interact with the various KU Leuven API endpoints.
 
-This library reproduces the Toledo login flow and returns a requests Session object that keeps track of your cookies and headers.
+This library reproduces the Toledo portal login flow and returns a requests Session object that keeps track of your cookies and headers.
 
-The Session object allows you to query the various endpoints.
+With this basic session object you can query these endpoints:
+  - Enrollments
+  - Upcoming courses
+  - Events (messages and updates)
+
+Optionally:
+1. Extend this basic session with kuloket cookies. This allows you to query the following endpoints:
+    - Schedule
+2. Extend this basic session with toledo dashboard cookies. This allows you to query the following endpoints:
+    - Todo (tasks and tests)
+
 
 Good to know:
 
@@ -23,26 +34,69 @@ Good to know:
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install pyToledo.
 
 ```bash
-pip install toledo
+pip install pytoledo
 ```
 
 ## Usage
 ### As a package
 
 ```python
-from toledo import login
+from toledo import portal
+from toledo import kuloket
+from toledo import dashboard
 from toledo import api
 
-# Create a session object | returns a requests Session object with the necessary cookies and headers
-session = login.create_session_object(
+# Create a portal session object 
+portal_session = portal.create_session_object(
     user='',
     password=''
 )
 
-# Create an api object with your session
-toledo = api.create_api_object(
-    session=session
+# Optionally extend the portal session with kuloket cookies
+extendend_session = kuloket.extend_session(
+    portal_session=portal_session
 )
+# and/or dashboard cookies
+extendend_session = dashboard.extend_session(
+    portal_session=portal_session
+)
+
+# Create an api object
+toledo = api.create_api_object(
+    session=extended_session
+)
+```
+#### Examples
+##### Enrollments/courses
+```python
+# returns all your courses in JSON
+toledo.get_enrollments()
+```
+##### Upcoming courses
+```python
+# returns your upcoming courses (for today) in JSON
+toledo.get_upcoming()
+```
+##### Events (messages & updates)
+```python
+# returns your messages in JSON
+toledo.get_events(type='message')
+
+# returns your updates in JSON
+toledo.get_events(type='update')
+```
+##### Todo (tasks & tests)
+```python
+# returns your tasks in JSON
+toledo.get_to_do(type='task')
+
+# returns your tests in JSON
+toledo.get_to_do(type='test')
+```
+##### Schedule
+```python
+# returns your schedule in JSON
+toledo.get_schedule()
 ```
 ### As a script
 ```bash
@@ -59,6 +113,8 @@ optional arguments:
   --events {message,update}, -ev {message,update}
                         retrieve your recent events (messages or updates)
 
+  --schedule, -sc       retrieve your schedule
+
   --rnumber RNUMBER, -rn RNUMBER
                         your personal rnumber
 
@@ -66,49 +122,34 @@ optional arguments:
                         your password
 
   --silent, -s          surpress output
-
 ```
-
-## Examples
-### Enrollments/courses
-```python
-# returns all your courses in JSON
-toledo.get_enrollments()
-or
-python -m toledo -en
+#### Examples
+##### Enrollments/courses
+```bash
+python -m toledo --enrollments --rnumber yourrrnumber --password yourpassword
 ```
-### Todo (tasks & tests)
-```python
-# returns open tasks in JSON
-toledo.get_to_do(type='task')
-or
-python -m toledo -td task
-
-# returns open tests in JSON
-toledo.get_to_do(type='test')
-or
-python -m toledo -td test
+##### Upcoming courses
+```bash
+python -m toledo --upcoming --rnumber yourrrnumber --password yourpassword
 ```
-### Upcoming courses
-```python
-# returns your upcoming courses (for a certain day) in JSON
-toledo.get_upcoming()
-or
-python -m toledo -up
+##### Events (messages & updates)
+```bash
+# Messages
+python -m toledo --events message --rnumber yourrrnumber --password yourpassword
+# Updates
+python -m toledo --events update --rnumber yourrrnumber --password yourpassword
 ```
-### Events (messages & updates)
-```python
-# returns your messages in JSON
-toledo.get_events(type='message')
-or
-python -m toledo -ev message
-
-# returns your updates in JSON
-toledo.get_events(type='update')
-or
-python -m toledo -ev update
+##### Todo (tasks & tests)
+```bash
+# Tasks
+python -m toledo --todo task --rnumber yourrrnumber --password yourpassword
+# Tests
+python -m toledo --todo test --rnumber yourrrnumber --password yourpassword
 ```
-
+##### Schedule
+```bash
+python -m toledo --schedule --rnumber yourrrnumber --password yourpassword
+```
 ## TODO
 - Documentation
 - Tests

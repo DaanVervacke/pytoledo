@@ -4,7 +4,9 @@ import argparse
 import sys
 import json
 
-from toledo.login import create_session_object
+from toledo.portal import create_session_object
+from toledo.dashboard import extend_session as dashboard_extend_session
+from toledo.kuloket import extend_session as kuloket_extend_session
 from toledo.api import create_api_object
 
 
@@ -13,6 +15,14 @@ def main(args):
     session = create_session_object(
         user=args.rnumber,
         password=args.password
+    )
+
+    session = dashboard_extend_session(
+        portal_session=session
+    )
+
+    session = kuloket_extend_session(
+        portal_session=session
     )
 
     api = create_api_object(
@@ -39,6 +49,10 @@ def main(args):
             type=args.events
         )
 
+    elif args.schedule:
+
+        output = api.get_schedule()
+
     if not args.silent:
 
         json.dump(output, sys.stdout)
@@ -59,6 +73,8 @@ if __name__ == '__main__':
         '--upcoming', '-up', help='retrieve your upcoming courses', action='store_true')
     optionsgroup.add_argument(
         '--events', '-ev', help='retrieve your recent events (messages or updates)', choices=['message', 'update'])
+    optionsgroup.add_argument(
+        '--schedule', '-sc', help='retrieve your schedule', action='store_true')
 
     parser.add_argument(
         '--rnumber', '-rn', help='your personal rnumber', nargs=1, required=True)
@@ -68,5 +84,5 @@ if __name__ == '__main__':
     parser.add_argument(
         '--silent', '-s', help='surpress output', action='store_true')
     parser.parse_args()
-    
+
     main(parser.parse_args())
