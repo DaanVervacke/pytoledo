@@ -4,6 +4,7 @@ import os
 import yaml
 
 from toledo.utils import set_user_agent
+from toledo.utils import clear_session
 
 from toledo.utils import get_start_html
 from toledo.utils import get_saml2_relay_and_request
@@ -47,17 +48,21 @@ class PortalLogin:
 
         try:
 
+
             if '' in (self._USER, self._PASSWORD):
 
                 raise Exception('Please check your credentials!')
 
             # 1. Toledo Portal
 
+            # Clear session
+            clear_session()
+
             # Set User-Agent
             set_user_agent(
                 user_agent=self._USER_AGENT
             )
-
+            
             # Load Toledo Portal
             portal_html = get_start_html(
                 url=self._PORTALURL
@@ -67,7 +72,7 @@ class PortalLogin:
             relaystate_samlrequest = get_saml2_relay_and_request(
                 html=portal_html
             )
-
+            
             # Post RelayState & SAMLRequest
             first_csrf_html = post_saml2_relay_and_request(
                 post_info=relaystate_samlrequest

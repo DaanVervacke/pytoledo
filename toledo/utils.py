@@ -10,12 +10,16 @@ from urllib.parse import parse_qs, urlparse
 
 SESSION = requests.Session()
 
-
-def set_user_agent(user_agent: str):
+def set_user_agent(user_agent: str) -> None:
 
     SESSION.headers.update({
         'User-Agent': user_agent
     })
+
+def clear_session() -> None:
+
+    SESSION.headers.clear()
+    SESSION.cookies.clear()
 
 
 ''' SAML2 GET METHODS '''
