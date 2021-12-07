@@ -41,19 +41,19 @@ pip install pytoledo
 #### using the docker repository
 Pull the docker container from the repository.
 
-´´´bash
+```bash
 docker pull robindbl/toledo
-´´´
+```
 Run the docker file with name "toledo", with exposed ports <code>8080:8080</code>
-´´´bash
+```bash
 docker run -itd --name toledo -p 8080:8080 toledo
-´´´
+```
 
 #### building the container from source
-´´´bash
+```bash
 cd pyToledo
 docker build --tag toledo:latest .
-´´´
+```
 
 ## Usage
 ### As a package
