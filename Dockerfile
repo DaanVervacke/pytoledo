@@ -4,8 +4,8 @@ LABEL Maintainer="RobinDBL"
 
 WORKDIR /user/app
 
-COPY * /user/app/
+ADD . /user/app/
 
 RUN pip3 install -r requirements.txt
 
-CMD [ "python", "main.py" ]
+CMD [ "python", "webserver.py" ]
