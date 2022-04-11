@@ -30,11 +30,29 @@ Good to know:
 - Tested on Windows 11 & Ubuntu 20.04
 - Teacher accounts (u) are not supported!
 ## Installation
-
+### pip
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install pyToledo.
 
 ```bash
 pip install pytoledo
+```
+
+### Docker
+#### using the docker repository
+Pull the docker container from the repository.
+
+```bash
+docker pull robindbl/toledo
+```
+Run the docker file with name "toledo", with exposed ports <code>8080:8080</code>
+```bash
+docker run -itd --name toledo -p 8080:8080 toledo
+```
+
+#### building the container from source
+```bash
+cd pyToledo
+docker build --tag toledo:latest .
 ```
 
 ## Usage
