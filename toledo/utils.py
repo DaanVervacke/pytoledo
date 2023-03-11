@@ -2,6 +2,8 @@ import json
 import requests
 import re
 import html as html_lib
+import asyncio
+import websockets
 
 from bs4 import BeautifulSoup
 from urllib.parse import parse_qs, urlparse
@@ -154,9 +156,11 @@ def post_saml2_relay_and_response(post_info: dict, return_code: bool = False) ->
 
 def post_saml2_csrf(post_info: dict, session_ss: str = '') -> str:
     ''' HTTP POST csrf token and return html'''
+    
+    url = f'https://idp.kuleuven.be{post_info["url"]}' if 'https://idp.kuleuven.be' not in post_info["url"] else post_info["url"] 
 
     r = SESSION.post(
-        url=post_info['url'],
+        url=url,
         data={
             'csrf_token': post_info['csrf_token'],
             'shib_idp_ls_exception.shib_idp_session_ss': '',
@@ -170,9 +174,15 @@ def post_saml2_csrf(post_info: dict, session_ss: str = '') -> str:
 
         }
     )
-
+    
     r.raise_for_status()
 
+    if r.history:
+        
+        shib_idp_session_cookie = r.history[0].cookies.get_dict()['shib_idp_session'] if 'shib_idp_session' in r.history[0].cookies.get_dict() else None
+        
+        SESSION.cookies.update({'shib_idp_session': shib_idp_session_cookie})
+    
     return r.text
 
 
@@ -193,6 +203,44 @@ def post_saml2_credentials(post_info: dict, username: str, password: str) -> str
     r.raise_for_status()
 
     return r.text
+
+def post_saml2_nextauth(data_account_id_info: dict, post_info: dict) -> str:
+    ''' HTTP POST csrf token and data-account-id and return html'''
+
+    r = SESSION.post(
+        url=post_info['url'],
+        data={
+            'csrf_token': post_info['csrf_token'],
+            '_eventId_ProvokeLoginOnAccount': '',
+            'nextauthAccountId': data_account_id_info['data-account-id']
+        },
+        headers={
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    )
+
+    r.raise_for_status()
+
+    return r.json()
+
+
+''' WEBSOCKET METHODS '''
+
+async def next_auth_provoke(payload_data: dict, data_account_id_info: dict, post_info: dict):
+    
+    async with websockets.connect(payload_data['url']) as websocket:
+
+        await websocket.send(f'REGISTER {payload_data["payload"]}')
+        
+        fourth_csrf = post_saml2_nextauth(data_account_id_info=data_account_id_info, post_info=post_info)
+        
+        while True:
+            
+            if 'LOGIN' in await websocket.recv():
+                break
+            
+        return fourth_csrf
+        
 
 
 ''' OTHER METHODS '''
@@ -314,3 +362,49 @@ def get_x_csrf_token(url: str) -> str:
         'X-Requested-With': 'XMLHttpRequest',
         'X-XHR-Logon': 'accept="iframe,strict-window,window"'
     })
+
+def get_data_account_id(html: str) -> dict:
+    ''' Searches and returns data-account-id from provided html'''
+
+    soup = BeautifulSoup(html, 'html.parser')
+
+    form = soup.find('form')
+    
+    return {
+        'data-account-id': form.find('button', {'data-account-id': True})['data-account-id']
+    }
+
+
+def get_websocket_payload(html: str) -> dict:
+    ''' Searches and returns the websocket payload from provided html'''
+
+    soup = BeautifulSoup(html, 'html.parser')
+    body = soup.find('body', {'onload': True})
+    next_auth_ws_init = html_lib.unescape(body['onload'])
+
+    payload = re.search(r"'(.*)','(.*)',.*'(.*)'", next_auth_ws_init)
+
+    return {
+        'url': f"{payload.group(3)}",
+        'payload': f"{payload.group(2)} {payload.group(1)}"
+    }
+
+def get_shib_idp_session_ss(html: str) -> dict:
+    ''' Searches and returns shib_idp_session_ss from provided html'''
+
+    soup = BeautifulSoup(html, 'html.parser')
+
+    script_tag = soup.find_all('script')[-1]
+
+    shib_idp_session_ss_match = re.search(r'", "(.*)"', str(script_tag))
+    
+    return shib_idp_session_ss_match.group(1)
+
+def check_login_state(html: str) -> bool:
+    ''' Searches for 'login-error' id and returns True or False with reason'''
+
+    soup = BeautifulSoup(html, 'html.parser')
+
+    alert = soup.find('div', {'id': 'login-error'})
+
+    return True if alert is None else False
