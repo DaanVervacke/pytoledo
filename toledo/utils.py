@@ -2,7 +2,6 @@ import json
 import requests
 import re
 import html as html_lib
-import asyncio
 import websockets
 
 from bs4 import BeautifulSoup

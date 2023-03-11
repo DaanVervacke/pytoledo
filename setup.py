@@ -26,6 +26,6 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     include_package_data=True,
     install_requires=["requests", "beautifulsoup4",
-                      "pkce", "soupsieve", "pyyaml"]
+                      "pkce", "soupsieve", "pyyaml", "websockets"]
 
 )
