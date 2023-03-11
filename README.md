@@ -1,27 +1,31 @@
-# pyToledo
+# pytoledo
+
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/DaanVervacke/pyToledo)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/DaanVervacke/pyToledo)
 ![GitHub Repo stars](https://img.shields.io/github/stars/DaanVervacke/pyToledo)
 
+pytoledo is a Python library to interact with the common virtual learning environment for the Association KU Leuven a.k.a Toledo.
 
-pyToledo is a Python library to interact with the common virtual learning environment for the Association KU Leuven a.k.a Toledo.
+**v3.0.0 adds support for KU Leuven Authenticator, which is now mandatory for all students**
 
 ## Motivation
+
 My goal was to provide an easy way to interact with the various KU Leuven API endpoints.
 
 This library reproduces the Toledo portal login flow and returns a requests Session object that keeps track of your cookies and headers.
 
 With this basic session object you can query these endpoints:
-  - Enrollments
-  - Upcoming courses
-  - Events (messages and updates)
+
+- Enrollments
+- Upcoming courses
+- Events (messages and updates)
 
 Optionally:
+
 1. Extend this basic session with kuloket cookies. This allows you to query the following endpoints:
     - Schedule
 2. Extend this basic session with toledo dashboard cookies. This allows you to query the following endpoints:
     - Todo (tasks and tests)
-
 
 Good to know:
 
@@ -29,33 +33,42 @@ Good to know:
 
 - Tested on Windows 11 & Ubuntu 20.04
 - Teacher accounts (u) are not supported!
+
 ## Installation
+
 ### pip
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install pyToledo.
+
+Use the package manager [pip](https://pip.pypa.io/en/stable/) to install pytoledo.
 
 ```bash
-pip install pytoledo
+pip install pytoledo --upgrade
 ```
 
 ### Docker
+
 #### using the docker repository
+
 Pull the docker container from the repository.
 
 ```bash
 docker pull robindbl/toledo
 ```
+
 Run the docker file with name "toledo", with exposed ports <code>8080:8080</code>
+
 ```bash
 docker run -itd --name toledo -p 8080:8080 toledo
 ```
 
 #### building the container from source
+
 ```bash
 cd pyToledo
 docker build --tag toledo:latest .
 ```
 
 ## Usage
+
 ### As a package
 
 ```python
@@ -84,18 +97,25 @@ toledo = api.create_api_object(
     session=extended_session
 )
 ```
+
 #### Examples
+
 ##### Enrollments/courses
+
 ```python
 # returns all your courses in JSON
 toledo.get_enrollments()
 ```
+
 ##### Upcoming courses
+
 ```python
 # returns your upcoming courses (for today) in JSON
 toledo.get_upcoming()
 ```
+
 ##### Events (messages & updates)
+
 ```python
 # returns your messages in JSON
 toledo.get_events(type='message')
@@ -103,7 +123,9 @@ toledo.get_events(type='message')
 # returns your updates in JSON
 toledo.get_events(type='update')
 ```
+
 ##### Todo (tasks & tests)
+
 ```python
 # returns your tasks in JSON
 toledo.get_to_do(type='task')
@@ -111,12 +133,16 @@ toledo.get_to_do(type='task')
 # returns your tests in JSON
 toledo.get_to_do(type='test')
 ```
+
 ##### Schedule
+
 ```python
 # returns your schedule in JSON
 toledo.get_schedule()
 ```
+
 ### As a script
+
 ```bash
 optional arguments:
   -h, --help            show this help message and exit
@@ -141,39 +167,54 @@ optional arguments:
 
   --silent, -s          surpress output
 ```
+
 #### Examples
+
 ##### Enrollments/courses
+
 ```bash
 python -m toledo --enrollments --rnumber yourrrnumber --password yourpassword
 ```
+
 ##### Upcoming courses
+
 ```bash
 python -m toledo --upcoming --rnumber yourrrnumber --password yourpassword
 ```
+
 ##### Events (messages & updates)
+
 ```bash
 # Messages
 python -m toledo --events message --rnumber yourrrnumber --password yourpassword
 # Updates
 python -m toledo --events update --rnumber yourrrnumber --password yourpassword
 ```
+
 ##### Todo (tasks & tests)
+
 ```bash
 # Tasks
 python -m toledo --todo task --rnumber yourrrnumber --password yourpassword
 # Tests
 python -m toledo --todo test --rnumber yourrrnumber --password yourpassword
 ```
+
 ##### Schedule
+
 ```bash
 python -m toledo --schedule --rnumber yourrrnumber --password yourpassword
 ```
+
 ## TODO
+
 - Documentation
 - Tests
 
 ## Contributing
+
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 ## License
+
 [GNU GPLv3](https://choosealicense.com/licenses/gpl-3.0/)
