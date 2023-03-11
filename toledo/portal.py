@@ -55,7 +55,6 @@ class PortalLogin:
 
         try:
 
-
             if '' in (self._USER, self._PASSWORD):
 
                 raise Exception('Please check your credentials!')
@@ -126,6 +125,7 @@ class PortalLogin:
                 html=third_csrf_html
             )
 
+            # Get fourth csrf token
             fourth_csrf = asyncio.run(next_auth_provoke(
                 payload_data=websocket_payload_data,
                 data_account_id_info=data_account_id_info,
