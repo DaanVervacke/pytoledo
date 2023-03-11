@@ -16,7 +16,7 @@ def main(args):
         user=args.rnumber,
         password=args.password
     )
-
+    
     session = dashboard_extend_session(
         portal_session=session
     )
@@ -84,5 +84,5 @@ if __name__ == '__main__':
     parser.add_argument(
         '--silent', '-s', help='surpress output', action='store_true')
     parser.parse_args()
-
+ 
     main(parser.parse_args())
