@@ -399,3 +399,12 @@ def get_shib_idp_session_ss(html: str) -> dict:
     shib_idp_session_ss_match = re.search(r'", "(.*)"', str(script_tag))
     
     return shib_idp_session_ss_match.group(1)
+
+def check_login_state(html: str) -> bool:
+    ''' Searches for 'login-error' id and returns True or False with reason'''
+
+    soup = BeautifulSoup(html, 'html.parser')
+
+    alert = soup.find('div', {'id': 'login-error'})
+
+    return True if alert is None else False

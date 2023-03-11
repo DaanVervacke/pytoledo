@@ -21,6 +21,7 @@ from toledo.utils import post_saml2_relay_and_response
 from toledo.utils import post_saml2_csrf
 from toledo.utils import post_saml2_credentials
 from toledo.utils import get_shib_idp_session_ss
+from toledo.utils import check_login_state
 
 from toledo.utils import SESSION
 
@@ -105,6 +106,10 @@ class PortalLogin:
                 username=self._USER,
                 password=self._PASSWORD
             )
+            
+            # Check login state
+            if not check_login_state(html=third_csrf_html):
+                raise Exception('Invalid credentials')
             
             # Get data-account-id (nextauthAccountId)
             data_account_id_info = get_data_account_id(
