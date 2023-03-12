@@ -10,7 +10,7 @@ README = (HERE / "README.md").read_text()
 # This call to setup() does all the work
 setuptools.setup(
     name="pyToledo",
-    version="3.0.0",
+    version="3.0.1",
     description="pyToledo is a Python library to interact with the common virtual learning environment for the Association KU Leuven a.k.a Toledo.",
     long_description=README,
     long_description_content_type="text/markdown",
