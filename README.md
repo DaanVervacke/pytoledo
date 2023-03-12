@@ -44,29 +44,6 @@ Use the package manager [pip](https://pip.pypa.io/en/stable/) to install pytoled
 pip install pytoledo --upgrade
 ```
 
-### Docker
-
-#### using the docker repository
-
-Pull the docker container from the repository.
-
-```bash
-docker pull robindbl/toledo
-```
-
-Run the docker file with name "toledo", with exposed ports <code>8080:8080</code>
-
-```bash
-docker run -itd --name toledo -p 8080:8080 toledo
-```
-
-#### building the container from source
-
-```bash
-cd pyToledo
-docker build --tag toledo:latest .
-```
-
 ## Usage
 
 ### As a package
