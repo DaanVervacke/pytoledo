@@ -30,9 +30,7 @@ Optionally:
 Good to know:
 
 - Data will always be returned as JSON via stdout. You can redirect the output to any file using '>'.
-
-- Tested on Windows 11 & Ubuntu 20.04
-- Teacher accounts (u) are not supported!
+- **Teacher accounts (u) are not supported!**
 
 ## Installation
 
