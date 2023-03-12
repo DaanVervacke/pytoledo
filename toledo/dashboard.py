@@ -100,13 +100,13 @@ class DashboardLogin:
             return SESSION
 
         except requests.exceptions.HTTPError as errh:
-            print("Http Error:", errh)
+            sys.exit("Http Error:", errh)
         except requests.exceptions.ConnectionError as errc:
-            print("Error Connecting:", errc)
+            sys.exit("Error Connecting:", errc)
         except requests.exceptions.Timeout as errt:
-            print("Timeout Error:", errt)
+            sys.exit("Timeout Error:", errt)
         except requests.exceptions.RequestException as err:
-            print("OOps: Something Else", err)
+            sys.exit("OOps: Something Else:", err)
         except AttributeError:
             sys.exit(
                 'Unable to find _shibsession_ in session. You can only extend portal sessions!')
