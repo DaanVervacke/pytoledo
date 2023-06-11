@@ -50,7 +50,7 @@ def get_saml2_relay_and_request(html: str) -> dict:
     return {
 
         'url': form['action'],
-        'relaystate': form.find('input', {'name': 'RelayState'})['value'],
+        'relaystate': form.find('input', {'name': 'RelayState'})['value'] if form.find('input', {'name': 'RelayState'}) is not None else None ,
         'samlrequest': form.find('input', {'name': 'SAMLRequest'})['value'],
     }
 
@@ -70,6 +70,14 @@ def get_saml2_relay_and_response(html: str) -> dict:
 
             'url': form['action'],
             'relaystate': form.find('input', {'name': 'RelayState'})['value'],
+            'samlresponse': form.find('input', {'name': 'SAMLResponse'})['value'],
+        }
+    
+    elif form.find('input', {'name': 'SAMLResponse'}) is not None:
+
+        return {
+
+            'url': form['action'],
             'samlresponse': form.find('input', {'name': 'SAMLResponse'})['value'],
         }
 
@@ -153,7 +161,7 @@ def post_saml2_relay_and_response(post_info: dict, return_code: bool = False) ->
         return r.text
 
 
-def post_saml2_csrf(post_info: dict, session_ss: str = '') -> str:
+def post_saml2_csrf(post_info: dict, session_ss: str = '', event_id: str = '') -> str:
     ''' HTTP POST csrf token and return html'''
     
     url = f'https://idp.kuleuven.be{post_info["url"]}' if 'https://idp.kuleuven.be' not in post_info["url"] else post_info["url"] 
@@ -169,7 +177,7 @@ def post_saml2_csrf(post_info: dict, session_ss: str = '') -> str:
             'shib_idp_ls_success.shib_idp_persistent_ss': 'true',
             'shib_idp_ls_value.shib_idp_persistent_ss': '',
             'shib_idp_ls_supported': 'true',
-            '_eventId_proceed': ''
+            '_eventId_proceed': event_id
 
         }
     )
@@ -239,7 +247,25 @@ async def next_auth_provoke(payload_data: dict, data_account_id_info: dict, post
                 break
             
         return fourth_csrf
-        
+    
+
+''' VIVES PLUS METHODS '''
+
+def get_vivesplus_auth_token(post_info: dict) -> str:
+    ''' HTTP POST samlresponse and return Vives Plus auth'''
+
+    r = SESSION.post(
+        url=post_info['url'],
+        data={
+            'SAMLResponse': post_info['samlresponse']
+        },
+    )
+
+    r.raise_for_status()
+
+    SESSION.headers.update({
+        'Authorization': f"Bearer {r.json()['id_token']}"
+    })
 
 
 ''' OTHER METHODS '''

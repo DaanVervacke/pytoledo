@@ -8,6 +8,8 @@ pytoledo is a Python library to interact with the common virtual learning enviro
 
 **v3.0.0 adds support for KU Leuven Authenticator, which is now mandatory for all students**
 
+**v3.1.0 adds the ability to query Vives Plus endpoints, please note that this might not work for Luca, Odisee, Thomas More and UCLL students!**
+
 ## Motivation
 
 My goal was to provide an easy way to interact with the various KU Leuven API endpoints.
@@ -26,9 +28,15 @@ Optionally:
     - Schedule
 2. Extend this basic session with toledo dashboard cookies. This allows you to query the following endpoints:
     - Todo (tasks and tests)
+3. Create a Vives Plus session. This allows you to query the following endpoints:
+    - Schedule (dynamic)
+    - Student information
+    - Notices
+    - Dashboard
 
 Good to know:
 
+- Bypassing KU Leuven Authenticator prompts is possible by exporting and re-using your Vives Plus authorization token.
 - Data will always be returned as JSON via stdout. You can redirect the output to any file using '>'.
 - **Teacher accounts (u) are not supported!**
 
@@ -45,6 +53,8 @@ pip install pytoledo --upgrade
 ## Usage
 
 ### As a package
+
+##### Toledo
 
 ```python
 from toledo import portal
@@ -68,55 +78,130 @@ extendend_session = dashboard.extend_session(
 )
 
 # Create an api object
-toledo = api.create_api_object(
+toledo_api = api.create_api_object(
     session=extended_session
+)
+```
+
+##### Vives Plus
+
+```python
+from toledo import vivesplus
+
+# Create a Vives Plus session object 
+vivesplus_session = vivesplus.create_vivesplus_session_object(
+    user='',
+    password='',
+    authorization=''
+)
+
+# Create an api object
+vivesplus_api = api.create_vivesplus_api_object(
+    session=vivesplus_session
 )
 ```
 
 #### Examples
 
-##### Enrollments/courses
+##### Toledo
+
+###### Enrollments/courses
 
 ```python
 # returns all your courses in JSON
-toledo.get_enrollments()
+toledo_api.get_enrollments()
 ```
 
-##### Upcoming courses
+###### Upcoming courses
 
 ```python
 # returns your upcoming courses (for today) in JSON
-toledo.get_upcoming()
+toledo_api.get_upcoming()
 ```
 
-##### Events (messages & updates)
+###### Events (messages & updates)
 
 ```python
 # returns your messages in JSON
-toledo.get_events(type='message')
+toledo_api.get_events(type='message')
 
 # returns your updates in JSON
-toledo.get_events(type='update')
+toledo_api.get_events(type='update')
 ```
 
-##### Todo (tasks & tests)
+###### Todo (tasks & tests)
 
 ```python
 # returns your tasks in JSON
-toledo.get_to_do(type='task')
+toledo_api.get_to_do(type='task')
 
 # returns your tests in JSON
-toledo.get_to_do(type='test')
+toledo_api.get_to_do(type='test')
 ```
 
-##### Schedule
+###### Schedule
 
 ```python
 # returns your schedule in JSON
-toledo.get_schedule()
+toledo_api.get_schedule()
+```
+
+##### Vives Plus
+
+###### Export and re-use authorization token
+
+```python
+# login using username and password
+vivesplus_session = vivesplus.create_vivesplus_session_object(
+    user='',
+    password='',
+)
+# Create an api object
+vivesplus_api = api.create_vivesplus_api_object(
+    session=vivesplus_session
+)
+# returns your authorization token in JSON
+authorization = vivesplus_api.get_authorization_token()
+
+# login using your authorization token, this will always overwrite any username and password
+vivesplus_session = vivesplus.create_vivesplus_session_object(
+    user='',
+    password='',
+    authorization=authorization['token']
+)
+```
+
+###### Schedule
+
+```python
+# returns your schedule in JSON
+vivesplus_api.get_schedule()
+```
+
+###### Student information
+
+```python
+# returns your student information in JSON
+vivesplus_api.get_student_info()
+```
+
+###### Dashboard
+
+```python
+# returns your dashboard in JSON
+vivesplus_api.get_dashboard()
+```
+
+###### Notices
+
+```python
+# returns your notices in JSON
+vivesplus_api.get_notices()
 ```
 
 ### As a script
+
+##### Toledo
 
 ```bash
 optional arguments:
@@ -143,42 +228,108 @@ optional arguments:
   --silent, -s          surpress output
 ```
 
+##### Vives Plus
+
+```bash
+optional arguments:
+  -h, --help            show this help message and exit
+
+  --schedule, -sc       retrieve your schedule
+
+  --student-info, -si   retrieve your student information
+
+  --dashboard, -db      retrieve your dashboard
+
+  --notices, -no        retrieve your notices
+
+  --get-authorization-token, -gat 
+                        retrieve your vives plus authorization token as a JSON file
+
+  --set-authorization-token JSON TOKEN FILE, -sat JSON TOKEN FILE
+                        set your vives plus authorization token by providing a JSON file
+
+  --rnumber RNUMBER, -rn RNUMBER
+                        your personal rnumber
+
+  --password PASSWORD, -pw PASSWORD
+                        your password
+
+  --silent, -s          surpress output
+```
+
 #### Examples
 
-##### Enrollments/courses
+##### Toledo
+
+###### Enrollments/courses
 
 ```bash
-python -m toledo --enrollments --rnumber yourrrnumber --password yourpassword
+python -m toledo toledo --enrollments --rnumber yourrrnumber --password yourpassword
 ```
 
-##### Upcoming courses
+###### Upcoming courses
 
 ```bash
-python -m toledo --upcoming --rnumber yourrrnumber --password yourpassword
+python -m toledo toledo --upcoming --rnumber yourrrnumber --password yourpassword
 ```
 
-##### Events (messages & updates)
+###### Events (messages & updates)
 
 ```bash
 # Messages
-python -m toledo --events message --rnumber yourrrnumber --password yourpassword
+python -m toledo toledo --events message --rnumber yourrrnumber --password yourpassword
 # Updates
-python -m toledo --events update --rnumber yourrrnumber --password yourpassword
+python -m toledo toledo --events update --rnumber yourrrnumber --password yourpassword
 ```
 
-##### Todo (tasks & tests)
+###### Todo (tasks & tests)
 
 ```bash
 # Tasks
-python -m toledo --todo task --rnumber yourrrnumber --password yourpassword
+python -m toledo toledo --todo task --rnumber yourrrnumber --password yourpassword
 # Tests
-python -m toledo --todo test --rnumber yourrrnumber --password yourpassword
+python -m toledo toledo --todo test --rnumber yourrrnumber --password yourpassword
 ```
 
-##### Schedule
+###### Schedule
 
 ```bash
-python -m toledo --schedule --rnumber yourrrnumber --password yourpassword
+python -m toledo toledo --schedule --rnumber yourrrnumber --password yourpassword
+```
+
+##### Vives Plus
+
+###### Export and re-use authorization token
+
+```bash
+# Export
+python -m toledo vivesplus --get-authorization-token --rnumber yourrrnumber --password yourpassword
+# Re-use
+python -m toledo vivesplus --set-authorization-token vivesplus_authorization_token_<yourrnumber>.json ... any other option
+```
+
+###### Schedule
+
+```bash
+python -m toledo vivesplus --set-authorization-token vivesplus_authorization_token_<yourrnumber>.json --schedule
+```
+
+###### Student information
+
+```bash
+python -m toledo vivesplus --set-authorization-token vivesplus_authorization_token_<yourrnumber>.json --student-info
+```
+
+###### Dashboard
+
+```bash
+python -m toledo vivesplus --set-authorization-token vivesplus_authorization_token_<yourrnumber>.json --dashboard
+```
+
+###### Notices
+
+```bash
+python -m toledo vivesplus --set-authorization-token vivesplus_authorization_token_<yourrnumber>.json --notices
 ```
 
 ## TODO

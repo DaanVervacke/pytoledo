@@ -33,7 +33,8 @@ class ToledoApi:
             self._TODO_URL = parser['API']['TodoEndpoint']
             self._LINK_URL = parser['API']['LinkEndpoint']
             self._SCHEDULE_URL = parser['API']['ScheduleEndpoint']
-
+            self._VIVESPLUS_SCHEDULE_URL = parser['API']['VivesPlusScheduleEndpoint']
+            
             self._TASK = parser['API_TO_DO']['Task']
             self._TEST = parser['API_TO_DO']['Test']
             self._VARIOUS = parser['API_TO_DO']['Various']
@@ -265,8 +266,122 @@ class ToledoApi:
             sys.exit(f'SCHEDULE: {ex}')
 
 
-def create_api_object(session: requests.Session) -> ToledoApi:
+class VivesPlusApi:
+
+    def __init__(self, session: requests.Session) -> None:
+
+        try:
+
+            with open(os.path.join(os.path.dirname(__file__), 'config.yaml'), 'r') as f:
+                parser = yaml.safe_load(f)
+                f.close()
+
+            self._VIVESPLUS_SCHEDULE_URL = parser['API']['VivesPlusScheduleEndpoint']
+            self._VIVESPLUS_STUDENT_URL = parser['API']['VivesPlusStudentEndpoint']
+            self._VIVESPLUS_DASHBOARD_URL = parser['API']['VivesPlusDashboardEndpoint']
+            self._VIVESPLUS_NOTICES_URL = parser['API']['VivesPlusNoticesEndpoint']
+
+            self._SESSION = session
+
+        except FileNotFoundError:
+            sys.exit('API: Unable to find find config.yaml!')
+
+        except Exception:
+            sys.exit('API: Failed to create API object!')
+
+    
+    ''' VIVES PLUS METHODS '''
+
+    def get_schedule(self) -> str:
+
+        try:
+
+            r = self._SESSION.get(
+                url=self._VIVESPLUS_SCHEDULE_URL,
+                params={
+                    'from': '2023-06-10',
+                    'to': '2023-06-23'
+                }
+            )
+
+            r.raise_for_status()
+
+            return r.json()
+
+        except Exception as ex:
+
+            sys.exit(f'SCHEDULE URL: {ex}')
+    
+    def get_student_info(self) -> str:
+
+        try:
+
+            r = self._SESSION.get(
+                url=self._VIVESPLUS_STUDENT_URL
+            )
+
+            r.raise_for_status()
+
+            return r.json()
+
+        except Exception as ex:
+
+            sys.exit(f'STUDENT URL: {ex}')
+
+    def get_dashboard(self) -> str:
+
+        try:
+
+            r = self._SESSION.get(
+                url=self._VIVESPLUS_DASHBOARD_URL
+            )
+
+            r.raise_for_status()
+
+            return r.json()
+
+        except Exception as ex:
+
+            sys.exit(f'DASHBOARD URL: {ex}')
+
+    def get_notices(self) -> str:
+
+        try:
+
+            r = self._SESSION.get(
+                url=self._VIVESPLUS_NOTICES_URL
+            )
+
+            r.raise_for_status()
+
+            return r.json()
+
+        except Exception as ex:
+
+            sys.exit(f'NOTICES URL: {ex}')
+    
+    def get_authorization_token(self) -> str:
+
+        try:
+
+            return {
+                    'token': self._SESSION.headers.get('Authorization')
+                }
+            
+        
+        except Exception as ex:
+
+            sys.exit(f'AUTHORIZATION TOKEN: {ex}')
+    
+
+def create_toledo_api_object(session: requests.Session) -> ToledoApi:
 
     return ToledoApi(
+        session=session
+    )
+
+def create_vivesplus_api_object(session: requests.Session) -> VivesPlusApi:
+
+    return VivesPlusApi(
         session=session
     )

@@ -1,8 +1,9 @@
-import time
+
 import requests
 import sys
 import os
 import yaml
+import json
 import asyncio
 
 from toledo.utils import set_user_agent
@@ -14,21 +15,20 @@ from toledo.utils import get_saml2_relay_and_response
 from toledo.utils import get_saml2_csrf
 from toledo.utils import get_data_account_id
 from toledo.utils import get_websocket_payload
+from toledo.utils import get_vivesplus_auth_token
 from toledo.utils import next_auth_provoke
 
 from toledo.utils import post_saml2_relay_and_request
-from toledo.utils import post_saml2_relay_and_response
 from toledo.utils import post_saml2_csrf
 from toledo.utils import post_saml2_credentials
-from toledo.utils import get_shib_idp_session_ss
 from toledo.utils import check_login_state
 
 from toledo.utils import SESSION
 
 
-class PortalLogin:
+class VivesPlusLogin:
 
-    # This class retrieves the _shibsession_ token
+    # This class retrieves the vives plus auth token
 
     def __init__(self, user: str, password: str) -> None:
 
@@ -41,7 +41,7 @@ class PortalLogin:
 
             sys.exit('Unable to find find config.yaml')
 
-        self._PORTALURL = parser['LOGIN']['PortalURL']
+        self._PORTALURL = parser['LOGIN']['PortalURLMobile']
 
         self._AUTHORIZATION_ENDPOINT = parser['LOGIN']['AuthorizationEndpoint']
         self._TOKEN_ENDPOINT = parser['LOGIN']['TokenEndpoint']
@@ -49,7 +49,7 @@ class PortalLogin:
 
         self._USER = user
         self._PASSWORD = password
-        self._USER_AGENT = parser['USER']['UserAgent']
+        self._USER_AGENT = parser['USER']['UserAgentMobile']
 
     def __call__(self) -> requests.Session:
 
@@ -59,7 +59,7 @@ class PortalLogin:
 
                 raise Exception('Please check your credentials!')
 
-            # 1. Toledo Portal
+            # 1. Vives Plus
 
             # Clear session
             clear_session()
@@ -73,17 +73,17 @@ class PortalLogin:
             portal_html = get_start_html(
                 url=self._PORTALURL
             )
-            
+
             # Get RelayState & SAMLRequest
             relaystate_samlrequest = get_saml2_relay_and_request(
                 html=portal_html
             )
-            
+
             # Post RelayState & SAMLRequest
             first_csrf_html = post_saml2_relay_and_request(
                 post_info=relaystate_samlrequest
             )
-            
+
             # Get first csrf token
             first_csrf = get_saml2_csrf(
                 html=first_csrf_html
@@ -142,9 +142,6 @@ class PortalLogin:
                 html=fifth_csrf_html
             )
 
-            # Get shib_idp_session_ss
-            #shib_idp_session_ss = get_shib_idp_session_ss(html=fifth_csrf_html)
-
             # Post fifth csrf token
             relaystate_samlresponse_html = post_saml2_csrf(
                 post_info=fifth_csrf,
@@ -161,10 +158,10 @@ class PortalLogin:
                 raise Exception('Please create a recovery code before using this package!')
             
             # Post RelayState & SAMLResponse
-            post_saml2_relay_and_response(
+            get_vivesplus_auth_token(
                 post_info=relaystate_samlresponse
             )
-            
+
             return SESSION
 
         except requests.exceptions.HTTPError as errh:
@@ -179,9 +176,31 @@ class PortalLogin:
             sys.exit(ex)
 
 
-def create_session_object(user: str, password: str) -> requests.Session:
+def create_vivesplus_session_object(user: str, password: str, authorization: str) -> requests.Session:
 
-    return PortalLogin(
-        user=user,
-        password=password
-    )()
+    if authorization is None:
+
+        return VivesPlusLogin(
+            user=user,
+            password=password
+        )()
+    
+    else:
+
+        if os.path.isfile(authorization):
+
+            with open(authorization, 'r') as f:
+
+                token = json.load(f)['token']
+        
+        else:
+
+            token = authorization
+
+        session = requests.Session()
+        session.headers.update(
+            {
+                'Authorization': token
+            }
+        )
+        return session
