@@ -176,7 +176,7 @@ class VivesPlusLogin:
             sys.exit(ex)
 
 
-def create_vivesplus_session_object(user: str, password: str, authorization: str) -> requests.Session:
+def create_vivesplus_session_object(user: str, password: str, authorization: str = None) -> requests.Session:
 
     if authorization is None:
 
