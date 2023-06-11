@@ -87,6 +87,7 @@ toledo_api = api.create_api_object(
 
 ```python
 from toledo import vivesplus
+from toledo import api
 
 # Create a Vives Plus session object 
 vivesplus_session = vivesplus.create_vivesplus_session_object(
