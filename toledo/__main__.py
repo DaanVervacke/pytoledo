@@ -87,7 +87,10 @@ def main(args):
 
             case 'schedule':
 
-                output = vivesplus_api.get_schedule()
+                output = vivesplus_api.get_schedule(
+                    start_date=args.schedule[0],
+                    end_date=args.schedule[1]
+                )
 
             case 'student_info':
 
@@ -148,7 +151,7 @@ if __name__ == '__main__':
     vivesplus_optionsgroup = vivesplus_parser.add_mutually_exclusive_group(required=True)
 
     vivesplus_optionsgroup.add_argument(
-        '--schedule', '-sc', help='retrieve your schedule', action='store_true')
+        '--schedule', '-sc', nargs=2, metavar=('start_date', 'end_date'), help='retrieve your schedule')
 
     vivesplus_optionsgroup.add_argument(
         '--student-info', '-si', help='retrieve your student information', action='store_true')
