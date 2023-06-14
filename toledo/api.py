@@ -292,15 +292,15 @@ class VivesPlusApi:
     
     ''' VIVES PLUS METHODS '''
 
-    def get_schedule(self) -> str:
+    def get_schedule(self, start_date, end_date) -> str:
 
         try:
 
             r = self._SESSION.get(
                 url=self._VIVESPLUS_SCHEDULE_URL,
                 params={
-                    'from': '2023-06-10',
-                    'to': '2023-06-23'
+                    'from': start_date,
+                    'to': end_date
                 }
             )
 
