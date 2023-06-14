@@ -68,7 +68,7 @@ class VivesPlusLogin:
             set_user_agent(
                 user_agent=self._USER_AGENT
             )
-            
+
             # Load Toledo Portal
             portal_html = get_start_html(
                 url=self._PORTALURL
@@ -98,18 +98,18 @@ class VivesPlusLogin:
             second_csrf = get_saml2_csrf(
                 html=second_csrf_html
             )
-            
+
             # Post credentials and second csrf token
             third_csrf_html = post_saml2_credentials(
                 post_info=second_csrf,
                 username=self._USER,
                 password=self._PASSWORD
             )
-            
+
             # Check login state
             if not check_login_state(html=third_csrf_html):
                 raise Exception('Invalid credentials')
-            
+
             # Get data-account-id (nextauthAccountId)
             data_account_id_info = get_data_account_id(
                 html=third_csrf_html
@@ -155,8 +155,9 @@ class VivesPlusLogin:
 
             if relaystate_samlresponse is None:
 
-                raise Exception('Please create a recovery code before using this package!')
-            
+                raise Exception(
+                    'Please create a recovery code before using this package!')
+
             # Post RelayState & SAMLResponse
             get_vivesplus_auth_token(
                 post_info=relaystate_samlresponse
@@ -173,34 +174,48 @@ class VivesPlusLogin:
         except requests.exceptions.RequestException as err:
             sys.exit("OOps: Something Else: ", err)
         except Exception as ex:
-            sys.exit(ex)
+            sys.exit(f"Error: {ex}")
 
 
-def create_vivesplus_session_object(user: str, password: str, authorization: str = None) -> requests.Session:
+def create_vivesplus_session_object(user: str = None, password: str = None, authorization: str = None) -> requests.Session:
 
-    if authorization is None:
+    try:
 
-        return VivesPlusLogin(
-            user=user,
-            password=password
-        )()
-    
-    else:
+        if authorization is None and None not in (user, password):
 
-        if os.path.isfile(authorization):
+            return VivesPlusLogin(
+                user=user,
+                password=password
+            )()
 
-            with open(authorization, 'r') as f:
+        elif authorization is not None and None in (user, password):
+            
+            if os.path.isfile(authorization):
 
-                token = json.load(f)['token']
-        
+                with open(authorization, 'r') as f:
+
+                    token = json.load(f)['token']
+
+            else:
+
+                if 'Bearer' not in authorization:
+
+                    raise Exception('An authorization token should contain "Bearer ..."!') 
+
+                token = authorization
+
+            session = requests.Session()
+            session.headers.update(
+                {
+                    'Authorization': token
+                }
+            )
+            return session
+
         else:
 
-            token = authorization
+            raise Exception('Please provide (username/password) or (authorization token/file)')
+    
+    except Exception as ex:
 
-        session = requests.Session()
-        session.headers.update(
-            {
-                'Authorization': token
-            }
-        )
-        return session
+        sys.exit(f'Credentials Error: {ex}')
