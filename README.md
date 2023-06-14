@@ -89,10 +89,14 @@ toledo_api = api.create_api_object(
 from toledo import vivesplus
 from toledo import api
 
-# Create a Vives Plus session object 
+# Create a Vives Plus session object from username & password
 vivesplus_session = vivesplus.create_vivesplus_session_object(
     user='',
     password='',
+)
+
+# or from authorization token or file
+vivesplus_session = vivesplus.create_vivesplus_session_object(
     authorization=''
 )
 
@@ -164,10 +168,8 @@ vivesplus_api = api.create_vivesplus_api_object(
 # returns your authorization token in JSON
 authorization = vivesplus_api.get_authorization_token()
 
-# login using your authorization token, this will always overwrite any username and password
+# login using your authorization token
 vivesplus_session = vivesplus.create_vivesplus_session_object(
-    user='',
-    password='',
     authorization=authorization['token']
 )
 ```
@@ -176,7 +178,10 @@ vivesplus_session = vivesplus.create_vivesplus_session_object(
 
 ```python
 # returns your schedule in JSON
-vivesplus_api.get_schedule()
+vivesplus_api.get_schedule(
+    start_date='2023-06-14',
+    end_date='2023-06-22'
+)
 ```
 
 ###### Student information
@@ -312,7 +317,7 @@ python -m toledo vivesplus --set-authorization-token vivesplus_authorization_tok
 ###### Schedule
 
 ```bash
-python -m toledo vivesplus --set-authorization-token vivesplus_authorization_token_<yourrnumber>.json --schedule
+python -m toledo vivesplus --set-authorization-token vivesplus_authorization_token_<yourrnumber>.json --schedule '2023-06-14' '2023-06-22'
 ```
 
 ###### Student information
